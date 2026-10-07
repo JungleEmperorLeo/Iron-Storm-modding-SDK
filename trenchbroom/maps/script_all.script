@@ -1,0 +1,40 @@
+# Full test of the script language. Walk east through the trigger lines in order.
+# Cecile (friend) starts by the player; three guards stand further east.
+
+on start
+    turn guard_a 400 -400 0          # guard_a looks at the south wall
+    atmosphere rain
+
+on enter z1 once                     # 1: speech, subtitle, follow
+    speak cecile XX1CECI015
+    subtitle DE3KOBO001
+    follow cecile 60
+
+on enter z2 once                     # 2: go to / turn
+    goto guard_a 300 -150 0
+    turn guard_b 100 150 0
+
+on enter z3 once                     # 3: alert, attack
+    alert guard_b
+    attack guard_b cecile
+
+on enter z4 once                     # 4: stop orders, new orders
+    stop guard_b
+    unfollow cecile
+    attack cecile guard_c
+
+on enter z5 once                     # 5: kill, remove
+    kill guard_c
+    remove guard_a
+
+on enter z6 once                     # 6: explosion + shake
+    explode 150 0 0
+    shake
+
+on enter z7 once                     # 7: sky, atmosphere, autosave
+    sky sky_LV_02
+    atmosphere neige
+    save
+
+on enter z8                          # 8: end of the game (credits)
+    end_level 0

@@ -1,0 +1,4 @@
+# materials.txt: material rules for every map (a materials.txt next to a map adds to / overrides these)
+# texture_name = kind [opacity]    kinds: opaque cut blend reflect reflect_bright add   (see docs\1_MAPPING.md, "Materials")
+
+LV1_flaque01 = blend_tex

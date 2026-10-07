@@ -1,0 +1,517 @@
+// Iron Storm entity definitions for TrenchBroom (converted by map2is.py)
+// Units: 1 TrenchBroom unit = 1 Iron Storm unit. Floors in the stock maps sit 36 units apart per storey.
+
+@SolidClass = worldspawn : "World"
+[
+    sky(string) : "Sky (set_sky name)" : "sky_LV_01"
+    ambient(string) : "Base light level 0-255 (only used when light entities exist)" : "64"
+    scale(string) : "Game units per map unit (player is about 27 game units tall = 72 map units)" : "0.375"
+    shadows(choices) : "Lights cast shadows" : 1 = [ 1 : "Yes" 0 : "No" ]
+    lightgrid(string) : "Wall/floor subdivision for lighting, smaller = smoother but heavier" : "192"
+    start_weapons(string) : "Starting weapons (single player), e.g. knife handgun smg shotgun sniper mg rocket launcher flamethrower; blank = knife smg sniper shotgun" : ""
+    start_ammo(string) : "Starting ammo pairs, e.g. mg 100 shotgun 20 (ammo: mg = smg + machine gun, sniper, shotgun, handgun, launcher, rocket, flamethrower); blank = mg 50 sniper 4 shotgun 10" : ""
+    player_model(string) : "Player body model (single player; an npc_soldier model name, blank = normal)" : ""
+    music(string) : "Music (single player): a .wav that loops everywhere, same volume all over the level. A stock sound name or a .wav in the map's sounds folder. Script: music on|off" : ""
+    music_volume(string) : "Music volume 0-1" : "1"
+    music_start(choices) : "Music plays from the start" : 1 = [ 1 : "Yes" 0 : "No (until the script's music on)" ]
+]
+
+@SolidClass = func_detail : "Detail brushes (drawn and solid, same as world)" []
+@SolidClass color(120 120 255) = func_sector : "Room volume. Each brush is one sector (rooms must touch, not overlap). Use special/skip." []
+@SolidClass = func_group : "Group (same as world)" []
+
+@baseclass = Angle [ angle(integer) : "Facing (degrees, 0 = +X)" : 0 ]
+
+@SolidClass color(255 40 40) = trigger_kill : "Kill zone (single player / campaign Test slot only). Anything that enters the volume dies (with an explosion). Use the special/trigger texture. Make it tall enough to cover a standing character." []
+
+@SolidClass color(0 255 0) = trigger_end : "Level end (single player / campaign Test slot only). When the player enters, the level ends and the game moves on to campaign level 'next'. Use special/trigger."
+[
+    next(integer) : "Campaign level to go to" : 0
+]
+
+@SolidClass color(255 160 0) = trigger_script : "Script zone (campaign Test slot / chain levels). When the player enters, the matching block of <map>.script runs (on enter <name> ...). Use special/trigger."
+[
+    targetname(string) : "Name used in the .script file" : ""
+]
+
+@SolidClass color(0 200 255) = trigger_weather : "Weather / sky zone (campaign Test slot / chain levels). When the player walks in, the 'enter' atmosphere and sky are applied; when the player walks out, the 'exit' ones. Leave a key empty to leave that part unchanged. Use special/trigger."
+[
+    enter_atmosphere(string) : "On enter: atmosphere (neige, rain, tempete, space)" : ""
+    exit_atmosphere(string) : "On exit: atmosphere (space = none)" : ""
+    enter_sky(string) : "On enter: sky model (sky_LV_01, sky_LV_02, sky_LV_03, sky_LV_05 ...)" : ""
+    exit_sky(string) : "On exit: sky model" : ""
+    enter_fog(string) : "On enter: switch to the env_fog with this targetname" : ""
+    exit_fog(string) : "On exit: switch to the env_fog with this targetname" : ""
+]
+
+@PointClass color(180 200 220) size(-8 -8 -8, 8 8 8) = env_fog : "Map fog (single player). Use several and switch between them with trigger_weather enter_fog / exit_fog (the game cannot change a fog colour while running). Colour 0-1 or 0-255. The campaign uses light grey (0.85), dark blue (0.1 0.1 0.15), white (1 1 1) and black for caves."
+[
+    targetname(string) : "Name (for trigger_weather enter_fog / exit_fog and the script fog command). The first env_fog in the map starts on, the others off." : ""
+    color(string) : "Fog colour (r g b)" : "0.85 0.85 0.85"
+    near(integer) : "Fog start distance" : 400
+    far(integer) : "Fog end distance" : 4000
+    height_a(integer) : "Height setting A (stock level 1: -400)" : -400
+    height_b(integer) : "Height setting B (stock level 1: 800)" : 800
+]
+
+@PointClass color(200 200 255) size(-8 -8 -8, 8 8 8) = env_particle : "Ready-made particle effect (single player): steam, gas jet. Placed at the origin; 'angles' is pitch yaw roll in degrees (stock values look like 0 -90 -10)."
+[
+    effect(choices) : "Effect" : "steam" =
+    [
+        "steam" : "Steam / vapor (pot, pipe)"
+        "gas" : "Gas jet (large)"
+        "gas_small" : "Gas jet (small)"
+    ]
+    scale(string) : "Scale (empty = default for the effect)" : ""
+    angles(string) : "Angles (pitch yaw roll)" : "0 0 0"
+]
+
+@PointClass color(160 120 80) size(-8 -8 -8, 8 8 8) = prop_static : "A model placed in the level (single player): any stock model from Models.lst (see STOCK_MODELS.md) or a model in the map's models folder. Origin is the model's pivot; test placement per model."
+[
+    model(string) : "Model file name (with or without .4x3)" : "OBJ_bidon"
+    mode(choices) : "Behaviour" : "static" =
+    [
+        "static" : "Static (not destructible)"
+        "breakable" : "Breakable (barrel/crate behaviour of the campaign)"
+        "crate" : "Wooden crate (OBJ_obj-caisse_cassable, OBJ_malle-cassable)"
+        "metal_crate" : "Metal / plastic crate (OBJ_caisse-metal_cassable, OBJ_caisse_plastique_cassable)"
+        "vent" : "Vent grille (OBJ_grille_aeration)"
+        "plank" : "Wooden plank (obj_planche)"
+    ]
+    drop(string) : "Contents (space separated): medikit, small_medikit, mg_ammo, sniper_ammo, shotgun_ammo, handgun_ammo, launcher_ammo, rocket_ammo, flame_ammo, mg3_ammo, or an item number. Breakable modes only" : ""
+    drop_health(integer) : "Medikit inside (0 = none, 1 = small, 2+ = medikit; breakable modes only)" : 0
+    angles(string) : "Rotation (pitch yaw roll, degrees)" : "0 0 0"
+    node(string) : "Node name inside the model (empty = whole model)" : ""
+]
+
+@SolidClass color(255 120 0) = func_button : "Button / lever: the brush is drawn and solid like func_detail; when the player presses use near its centre the 'on use <targetname>' block of the .script runs (campaign Test slot / chain levels). Set angle to the way the button faces."
+[
+    targetname(string) : "Name used in the .script file" : ""
+    angle(integer) : "Facing (yaw)" : 0
+    range(integer) : "Use range (map units, 0 = default)" : 0
+    cone(integer) : "Use angle (degrees, default 90)" : 90
+]
+
+@SolidClass color(0 200 255) = trigger_save : "Autosave checkpoint (single player / campaign Test slot only). The game autosaves when the player enters. Use special/trigger." []
+
+@SolidClass color(30 120 255) = func_water : "Water volume. Only the top face is drawn, not solid. Floors under it get water footsteps and impacts. Single player / campaign slots: the engine's own water (the surface ripples and slides like the stock levels'); multiplayer: a flat translucent plane (opacity = worldspawn glass_opacity). Texture the top face with any texture (it is drawn translucent)."
+[
+    tint(string) : "Water colour (r g b, 0-1 or 0-255). Default: the texture's average colour, darkened" : ""
+    speed(string) : "Ripple strength (stock levels use 0.05 to 0.5)" : "0.15"
+    opacity(string) : "Surface opacity 0-1 (default: worldspawn glass_opacity, else 0.6)" : ""
+    grid(string) : "Ripple mesh cell size in map units (smaller = smoother, heavier)" : "24"
+    depth(string) : "Engine water value 5 (stock levels use 10 to 25; level 1 uses -200)" : "10"
+    height(string) : "Engine water value 6 (stock levels use 50 to 65)" : "50"
+    effect(string) : "0 = old flat plane even in single player" : "1"
+]
+
+@PointClass base(Angle) color(0 160 255) size(-40 -8 0, 40 8 104) = door : "Sliding door, stock model (single player / campaign Test slot only). Opens when someone comes near. Origin = bottom centre; angle = the way the door faces (it spans left-right across it)."
+[
+    model(choices) : "Model" : "blindee" =
+    [
+        "blindee" : "Armoured door (80 x 103 map units)"
+        "std" : "Standard door (32 x 69)"
+        "bunker" : "Bunker door (32 x 67)"
+        "cell" : "Cell door (39 x 87)"
+        "gare" : "Station door (174 x 95)"
+        "lift" : "Lift door, metal (27 x 80)"
+        "sas" : "Airlock door (56 x 136)"
+    ]
+    slide(choices) : "Opens towards" : "left" =
+    [
+        "left" : "Left"
+        "right" : "Right"
+        "up" : "Up"
+        "down" : "Down"
+    ]
+    distance(integer) : "Slide distance (map units, 0 = its own width/height)" : 0
+    speed(string) : "Speed" : "0.3"
+    wait(string) : "Seconds before closing (-1 = stays open)" : "3"
+    range(string) : "Opening distance (game units)" : "50"
+    targetname(target_source) : "Name (for script open / close)"
+    locked(choices) : "Opens by itself" : 0 =
+    [
+        0 : "Yes, when someone comes near"
+        1 : "No, only when the script says open"
+    ]
+]
+
+@PointClass base(Angle) color(255 128 0) size(-16 -16 0, 16 16 64) = npc_soldier : "Enemy soldier (single player / campaign Test slot only). Holds position and fights. Origin = feet."
+[
+    weapon(choices) : "Weapon" : "smg" =
+    [
+        "smg" : "Submachine gun"
+        "mg" : "Machine gun"
+        "shotgun" : "Shotgun"
+        "sniper" : "Sniper rifle"
+        "rocket" : "Rocket launcher"
+    ]
+    model(choices) : "Model" : "russian" =
+    [
+        "russian" : "Russian (default)"
+        "sniper" : "Sniper"
+        "camouflage" : "Camouflage"
+        "amedic" : "Army medic"
+        "butcher" : "Butcher"
+        "cadet" : "Cadet"
+        "camouf" : "Camouflage (lv1)"
+        "casque_russian" : "Russian, helmet"
+        "casque_trooper" : "Trooper, helmet"
+        "cecile" : "Cecile"
+        "cobaye" : "Test subject"
+        "cook" : "Cook"
+        "dogmaster" : "Dog master"
+        "ecorch" : "Ecorch"
+        "fscient" : "Scientist (female)"
+        "gunner" : "Gunner"
+        "kasakh" : "Kasakh"
+        "lobby" : "Lobby"
+        "logan" : "Logan"
+        "masque" : "Masked"
+        "Mecca" : "Mecca"
+        "medic" : "Medic"
+        "mitchell" : "Mitchell"
+        "nurse" : "Nurse"
+        "officerone" : "Officer 1"
+        "officertwo" : "Officer 2"
+        "relax" : "Off-duty soldier"
+        "scient" : "Scientist"
+        "sibbourrin1" : "Siberian 1"
+        "sibbourrin2" : "Siberian 2"
+        "siberian" : "Siberian"
+        "sibsniper" : "Siberian sniper"
+        "supercadet" : "Super cadet"
+        "trooper" : "Trooper"
+        "ungern" : "Ungern"
+        "worker" : "Worker"
+        "wounded" : "Wounded"
+    ]
+    health(integer) : "Health" : 60
+    targetname(string) : "Name (for .script files)" : ""
+    hidden(choices) : "Hidden at start (appears when a script runs 'show')" : 0 =
+    [
+        0 : "No"
+        1 : "Yes"
+    ]
+    behavior(choices) : "Behaviour (campaign Test slot)" : "stand" =
+    [
+        "stand" : "Stand guard"
+        "chase" : "Walk up to the player (slow)"
+        "patrol" : "Patrol path_corners"
+        "rush" : "Run to a path_corner (or the player start)"
+    ]
+    target(string) : "path_corner (patrol / rush)" : ""
+]
+
+@PointClass color(255 200 0) size(-8 -8 0, 8 8 16) = path_corner : "Patrol waypoint. A soldier walks to the corner named in its target key, then on to this corner's target, and so on (point the last back at the first to loop)."
+[
+    targetname(string) : "Name" : ""
+    target(string) : "Next path_corner" : ""
+]
+
+@PointClass base(Angle) color(0 255 0) size(-16 -16 0, 16 16 64) = info_player_start : "Single-player start (campaign Test slot). Origin = feet."
+[
+]
+
+@PointClass base(Angle) color(255 64 64) size(-16 -16 0, 16 16 64) = info_player_team1 : "Capture the flag spawn, team 1 (USWE). Origin = feet."
+[
+]
+
+@PointClass base(Angle) color(64 64 255) size(-16 -16 0, 16 16 64) = info_player_team2 : "Capture the flag spawn, team 2 (Russian). Origin = feet."
+[
+]
+
+@PointClass base(Angle) color(0 255 0) size(-16 -16 0, 16 16 64) = info_player_deathmatch : "Player spawn (max 32). Origin = feet."
+[
+    team(choices) : "Team (team deathmatch)" : 0 =
+    [
+        0 : "Any (alternates 1/2)"
+        1 : "Team 1"
+        2 : "Team 2"
+    ]
+]
+
+@PointClass base(Angle) color(0 255 120) size(-52 -24 0, 52 24 72) = item_health : "First-aid crate (single player / campaign Test slot only; the stock level 1 medic crate). Origin = bottom centre."
+[
+    amount(string) : "Uses / amount (stock value 3)" : "3"
+]
+
+@PointClass base(Angle) color(0 255 0) size(-16 -16 0, 16 16 72) = npc_friend : "Friendly character from level 1 (campaign Test slot / chain levels only). Fights on your side."
+[
+    targetname(string) : "Name (for .script files)" : ""
+    hidden(choices) : "Hidden at start (appears when a script runs 'show')" : 0 =
+    [
+        0 : "No"
+        1 : "Yes"
+    ]
+    who(choices) : "Who" : "cecile" =
+    [
+        "cecile" : "Cecile"
+        "mitchel" : "Mitchel"
+    ]
+    behavior(choices) : "Behaviour" : "follow" =
+    [
+        "follow" : "Follow the player"
+        "stand" : "Stay where he is"
+    ]
+    distance(integer) : "Follow distance" : 85
+    health(integer) : "Health" : 200
+    model(choices) : "Model (blank = the character's own)" : "" =
+    [
+        "" : "Own model"
+        "russian" : "Russian"
+        "sniper" : "Sniper"
+        "camouflage" : "Camouflage"
+        "amedic" : "Army medic"
+        "butcher" : "Butcher"
+        "cadet" : "Cadet"
+        "camouf" : "Camouflage (lv1)"
+        "casque_russian" : "Russian, helmet"
+        "casque_trooper" : "Trooper, helmet"
+        "cecile" : "Cecile"
+        "cobaye" : "Test subject"
+        "cook" : "Cook"
+        "dogmaster" : "Dog master"
+        "ecorch" : "Ecorch"
+        "fscient" : "Scientist (female)"
+        "gunner" : "Gunner"
+        "kasakh" : "Kasakh"
+        "lobby" : "Lobby"
+        "logan" : "Logan"
+        "masque" : "Masked"
+        "Mecca" : "Mecca"
+        "medic" : "Medic"
+        "mitchell" : "Mitchell"
+        "nurse" : "Nurse"
+        "officerone" : "Officer 1"
+        "officertwo" : "Officer 2"
+        "relax" : "Off-duty soldier"
+        "scient" : "Scientist"
+        "sibbourrin1" : "Siberian 1"
+        "sibbourrin2" : "Siberian 2"
+        "siberian" : "Siberian"
+        "sibsniper" : "Siberian sniper"
+        "supercadet" : "Super cadet"
+        "trooper" : "Trooper"
+        "ungern" : "Ungern"
+        "worker" : "Worker"
+        "wounded" : "Wounded"
+    ]
+]
+
+@PointClass base(Angle) color(0 200 255) size(-52 -24 0, 52 24 72) = item_crate : "Custom weapon crate (single player / campaign Test slot only, any number). Fill up to 4 slots with a medikit or guns. Origin = bottom centre."
+[
+    item_1(choices) : "Item 1" : -1 =
+    [
+        -1 : "(empty)"
+        0 : "Medikit"
+        1 : "Handgun"
+        2 : "SMG"
+        3 : "Sniper rifle"
+        4 : "Shotgun"
+        5 : "MG 1"
+        6 : "MG 2"
+        7 : "MG 3"
+        8 : "MG 4"
+        9 : "Launcher"
+        10 : "Rocket launcher"
+        11 : "Flamethrower"
+    ]
+    ammo_1(integer) : "Magazines for item 1 (guns only)" : 4
+    item_2(choices) : "Item 2" : -1 =
+    [
+        -1 : "(empty)"
+        0 : "Medikit"
+        1 : "Handgun"
+        2 : "SMG"
+        3 : "Sniper rifle"
+        4 : "Shotgun"
+        5 : "MG 1"
+        6 : "MG 2"
+        7 : "MG 3"
+        8 : "MG 4"
+        9 : "Launcher"
+        10 : "Rocket launcher"
+        11 : "Flamethrower"
+    ]
+    ammo_2(integer) : "Magazines for item 2 (guns only)" : 4
+    item_3(choices) : "Item 3" : -1 =
+    [
+        -1 : "(empty)"
+        0 : "Medikit"
+        1 : "Handgun"
+        2 : "SMG"
+        3 : "Sniper rifle"
+        4 : "Shotgun"
+        5 : "MG 1"
+        6 : "MG 2"
+        7 : "MG 3"
+        8 : "MG 4"
+        9 : "Launcher"
+        10 : "Rocket launcher"
+        11 : "Flamethrower"
+    ]
+    ammo_3(integer) : "Magazines for item 3 (guns only)" : 4
+    item_4(choices) : "Item 4" : -1 =
+    [
+        -1 : "(empty)"
+        0 : "Medikit"
+        1 : "Handgun"
+        2 : "SMG"
+        3 : "Sniper rifle"
+        4 : "Shotgun"
+        5 : "MG 1"
+        6 : "MG 2"
+        7 : "MG 3"
+        8 : "MG 4"
+        9 : "Launcher"
+        10 : "Rocket launcher"
+        11 : "Flamethrower"
+    ]
+    ammo_4(integer) : "Magazines for item 4 (guns only)" : 4
+    amount(string) : "Medikit uses (stock value 3)" : "3"
+]
+
+@PointClass base(Angle) color(120 255 0) size(-8 -8 0, 8 8 12) = item_pickup : "Loose pickup lying on the floor (single player / campaign Test slot only). Origin = on the floor."
+[
+    type(choices) : "Pickup" : 0 =
+    [
+        0 : "Medikit (health)"
+        1 : "Small medikit (health, untested)"
+        2 : "Machine gun / SMG ammo"
+        3 : "Sniper ammo"
+        4 : "Shotgun ammo"
+        5 : "Handgun ammo (untested)"
+        6 : "Launcher ammo (untested)"
+        7 : "Rocket ammo (untested)"
+        8 : "Flame ammo (untested)"
+        9 : "MG3 ammo (untested)"
+    ]
+    custom(integer) : "Raw type number (overrides the list; for testing other types)" : -1
+]
+
+@PointClass base(Angle) color(255 200 0) size(-16 -4 0, 16 4 6) = item_weapon : "Weapon lying on the floor (single player / campaign Test slot only), unlimited number. Origin = on the floor."
+[
+    weapon(choices) : "Weapon" : 4 =
+    [
+        1 : "Handgun (untested)"
+        2 : "SMG"
+        3 : "Sniper rifle"
+        4 : "Shotgun"
+        5 : "MG 1 (untested)"
+        6 : "MG 2 (untested)"
+        7 : "MG 3 (untested)"
+        8 : "MG 4 (untested)"
+        9 : "Launcher (untested)"
+        10 : "Rocket launcher (untested)"
+        11 : "Flamethrower (untested)"
+    ]
+    ammo(integer) : "Ammo (-1 = default)" : -1
+]
+
+@PointClass base(Angle) color(255 160 0) size(-52 -24 0, 52 24 72) = item_armory : "Weapon crate (max 6, 16 in capture the flag). Origin = bottom centre."
+[
+    team(choices) : "Team (capture the flag only)" : 0 =
+    [
+        0 : "Any"
+        1 : "Team 1 (USWE)"
+        2 : "Team 2 (Russian)"
+    ]
+    loadout(choices) : "Weapon set (copied from the stock isdm3 crates)" : 0 =
+    [
+        0 : "Next free"
+        1 : "Crate 1"
+        2 : "Crate 2"
+        3 : "Crate 3"
+        4 : "Crate 4"
+        5 : "Crate 5"
+        6 : "Crate 6"
+    ]
+]
+
+@PointClass base(Angle) color(0 160 255) size(-4 -4 -4, 4 4 4) = info_camera_spawn : "Camera shown before you spawn (one)"
+[
+    pitch(integer) : "Look down (degrees)" : 15
+]
+
+@PointClass color(255 255 0) size(-8 -8 -8, 8 8 8) = light_sun : "Sun lens flare position (one)" []
+
+@PointClass color(160 160 255) size(-4 -4 -4, 4 4 4) = ambient_wind : "Looping wind sound (max 2)" []
+
+@PointClass color(255 255 200) size(-4 -4 -4, 4 4 4) = light : "Point light (replaces the template lights when present)"
+[
+    _color(string) : "Colour (r g b, 0-255)" : "255 255 255"
+    light(string) : "Intensity (negative darkens)" : "1.0"
+    range(string) : "Range, full fall-off distance" : "400"
+    start(string) : "Fall-off start distance" : "0"
+]
+
+@PointClass color(60 120 255) size(-16 -16 0, 16 16 54) = info_flag_team1 : "Team 1 (USWE) flag and base. Needs both flags for capture the flag. Origin = bottom of the cloth." [ height(integer) : "Extra height (map units)" : 0 ]
+@PointClass color(255 60 60) size(-16 -16 0, 16 16 54) = info_flag_team2 : "Team 2 (Russian) flag and base. Needs both flags for capture the flag. Origin = bottom of the cloth." [ height(integer) : "Extra height (map units)" : 0 ]
+
+@PointClass color(80 200 255) size(-8 -8 0, 8 8 24) = info_drt : "D.R.T. computer (single player): the terminal plays its briefing movies when the player uses it. Movies are the stock ones in movies\\ (custom .4xm cannot be made yet)."
+[
+    angle(integer) : "Facing (degrees)" : 0
+    movie(string) : "Movies, space separated, up to 6: XX1DRT0011 XX1DRT0012 XX3DRT0031 XX4DRT0041 XX4DRT0042 XX5DRT0051 XX5DRT0052 XX6DRT0061 XX6DRT0062" : "XX1DRT0011"
+    time(string) : "EDRT property 4 (the campaign uses 200 to 3000)" : "3000"
+]
+
+@PointClass color(240 230 160) size(-4 -4 0, 4 4 2) = info_document : "Readable document (single player). Text is a stock text id: XX1DOCU000-004, XX3DOCU000-002, XX4DOCU000-001, XX5DOCU000-001, XX6DOCU000-001."
+[
+    angle(integer) : "Facing (degrees)" : 0
+    text(string) : "Text id" : "XX1DOCU002"
+]
+
+@PointClass color(255 60 60) size(-8 -8 0, 8 8 16) = npc_turret : "Automatic machine-gun turret (single player, auto_mg). Off until the alarm: script alarm on / alarm off, or turret NAME on|off."
+[
+    angle(integer) : "Facing (degrees)" : 0
+    yaw_min(string) : "Arc left limit (degrees, campaign -30 to -90)" : "-90"
+    yaw_max(string) : "Arc right limit (degrees, campaign 30 to 90)" : "90"
+    rate(string) : "Seconds between shots (campaign 0.08 to 0.2)" : "0.1"
+    health(string) : "Health (campaign 500 to 10000)" : "1000"
+    targetname(string) : "Name for the script command turret NAME on|off" : ""
+    friendly(choices) : "Side" : 0 = [ 0 : "Enemy (shoots the player)" 1 : "Player's side (shoots enemies, like level 1's)" ]
+    active(choices) : "On from the start (otherwise off until the script's alarm on / turret NAME on)" : 0 = [ 0 : "No" 1 : "Yes" ]
+]
+
+@PointClass color(80 200 255) size(-8 -8 -8, 8 8 8) = ambient_sound : "Positional sound (single player). Full volume within radius, fading out to silence at falloff. wav = a stock sound file name (see docs) or a .wav in a sounds folder next to the map (PCM .wav, 22050 or 44100 Hz). Script: sound NAME on|off."
+[
+    wav(string) : "Sound file (.wav)" : ""
+    volume(string) : "Volume 0-1" : "1"
+    radius(string) : "Full-volume radius (map units)" : "300"
+    falloff(string) : "Silent beyond this distance (map units; blank = 2 x radius)" : ""
+    loop(choices) : "Repeat" : 1 = [ 1 : "Loop" 0 : "Play once" ]
+    start_on(choices) : "Plays from the start" : 1 = [ 1 : "Yes" 0 : "No (until the script's sound NAME on)" ]
+    targetname(string) : "Name for the script command sound NAME on|off" : ""
+]
+
+@PointClass color(200 120 60) size(-8 -8 0, 8 8 12) = npc_dog : "Attack dog (single player)."
+[
+    angle(integer) : "Facing (degrees)" : 0
+    explosive(choices) : "Explosive (blows up when it attacks: radius 200, damage 50)" : 0 = [ 0 : "No" 1 : "Yes" ]
+    friendly(choices) : "Side" : 0 = [ 0 : "Enemy" 1 : "Player's side (attacks enemies)" ]
+    range(string) : "Detection range (empty = 200)" : ""
+    health(string) : "Health (empty = 50)" : ""
+    damage(string) : "Bite damage (empty = 20)" : ""
+]
+
+@PointClass color(120 120 120) size(-8 -8 0, 8 8 16) = weapon_mounted_mg : "Mounted gun the player can use (single player). Settings copy the campaign's guns of that kind."
+[
+    angle(integer) : "Facing (degrees)" : 0
+    kind(choices) : "Model" : "bunker" =
+    [
+        "bunker" : "Bunker machine gun (FMG_mitrailleuse_bunker)"
+        "handles" : "Machine gun with handles (FMG_poignees)"
+        "launcher" : "Launcher, no stand (FMG_launcher_sans_pied)"
+        "launcher_stand" : "Launcher on a stand (FMG_launcher_avec_pied)"
+        "desk" : "Desk-mounted gun (FMG_pupitre)"
+    ]
+    pitch_range(string) : "Up/down range (empty = the kind's own)" : ""
+    yaw_range(string) : "Left/right range (empty = the kind's own)" : ""
+]
+
+@PointClass color(90 140 255) size(-24 -24 -12, 24 24 12) = npc_helicopter : "EXPERIMENTAL, orders do not work reliably (edit the script by hand with gexpad). Helicopter (single player). It sits at this point until the script steers it: heli_start NAME, heli_move NAME POINT, heli_attack NAME npc, heli_fire / heli_land / heli_takeoff / heli_crash NAME POINT (POINT = a path_corner targetname, or x y z), heli_speed NAME n, heli_stop NAME."
+[
+    targetname(string) : "Name used in the .script file" : "heli1"
+    kind(choices) : "Model" : "allies" = [ "allies" : "Allied transport" "enemy" : "Enemy transport" ]
+]

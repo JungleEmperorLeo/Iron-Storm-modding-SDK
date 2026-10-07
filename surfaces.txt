@@ -1,0 +1,25 @@
+# Footstep / bullet-impact surface by texture name.
+#
+# Block form: a surface name followed by "=", then one texture per line.
+# A texture matches if its full name (folder included) CONTAINS the line, so a short fragment covers many textures.
+#
+#   wood =
+#     lv3_bois
+#     planks
+#
+#   metal =
+#     grate
+#     prototype_512x512_grey4
+#
+# One-line form also works:   grate = metal
+#
+# Surface names: ground, metal, rock, snow, water, wood
+# Numbers behind the names are unverified. Fix a name here if it sounds wrong, e.g.:   @metal = 2
+@ground = 1   # unconfirmed (stock default/misc)
+@metal = 4
+@rock = 3   # unconfirmed (stock concrete/stone)
+@snow = 8
+@water = 7
+@wood = 2   # verified
+
+# your rules

@@ -1,0 +1,6 @@
+# Sample mod: you play as a trooper. Kill the three guards and the door opens.
+on start
+    subtitle DE3KOBO001
+on dead guard1 guard2 guard3
+    wait 1
+    open exit

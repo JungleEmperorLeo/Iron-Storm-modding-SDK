@@ -1,0 +1,8 @@
+{
+  "title": "Sample: Trooper",
+  "description": "A small test mod. You play as a trooper (custom player body and first-person arms). Kill the three guards and the armoured door opens.",
+  "author": "Sample",
+  "campaign": [
+    "trooper_sample.map"
+  ]
+}

@@ -1,0 +1,9 @@
+# sound_test: left button starts the music and the beeper (right side of the room), right button stops both.
+# The left side of the room has a stock war-rumble ambience (MIT_LOIN3) that plays from the start.
+on use snd_on
+    music on
+    sound beeper on
+
+on use snd_off
+    music off
+    sound beeper off

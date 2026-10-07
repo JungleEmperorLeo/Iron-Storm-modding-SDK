@@ -1,0 +1,10 @@
+# materials_test: panels left to right along the wall (orange is the plain control), then the two pools on the right.
+# format:  texture = kind [opacity]     kinds: opaque cut blend reflect reflect_bright add
+dev/prototype_512x512_blue1  = blend 0.8      # translucent and lit, like level 2's swamp (0.8)
+dev/prototype_512x512_blue2  = blend 0.4
+dev/prototype_512x512_cyan   = reflect        # translucent with an environment reflection (helicopter window)
+dev/prototype_512x512_purple = reflect_bright # reflection, ignores lighting (level 6 domes)
+lens_flare/Glow_add          = add            # additive glow, ignores lighting
+lens_flare/LF_Ray            = add 0.5
+water/pool3d_3f              = blend 0.6      # func_water pools are translucent anyway; this sets their opacity
+special/water_surface        = blend 0.85

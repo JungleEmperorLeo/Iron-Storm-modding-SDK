@@ -1,0 +1,8 @@
+// Game: Iron Storm
+// Format: Valve
+// entity 0
+{
+"mapversion" "220"
+"classname" "worldspawn"
+"sky" "sky_LV_01"
+}
